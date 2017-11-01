@@ -13,31 +13,41 @@
 # limitations under the License.
 
 
-kind: ReplicationController
-apiVersion: v1
+kind: Deployment
+apiVersion: extensions/v1beta1
 metadata:
-  name: locust-worker
+  name: locust-master
   labels:
     name: locust
-    role: worker
+    role: master
 spec:
-  replicas: 10
-  selector:
-    name: locust
-    role: worker
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 0
+  replicas: 1
   template:
     metadata:
       labels:
         name: locust
-        role: worker
+        role: master
     spec:
       containers:
         - name: locust
           image: quay.io/dtan4/locust-tasks:latest
           env:
             - name: LOCUST_MODE
-              value: worker
-            - name: LOCUST_MASTER
-              value: locust-master
+              value: master
             - name: TARGET_HOST
               value: http://workload-simulation-webapp.appspot.com
+          ports:
+            - name: loc-master-web
+              containerPort: 8089
+              protocol: TCP
+            - name: loc-master-p1
+              containerPort: 5557
+              protocol: TCP
+            - name: loc-master-p2
+              containerPort: 5558
+              protocol: TCP
