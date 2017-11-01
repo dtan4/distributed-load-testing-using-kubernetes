@@ -26,7 +26,7 @@ spec:
     rollingUpdate:
       maxSurge: 50%
       maxUnavailable: 0
-  replicas: 10
+  replicas: 3
   template:
     metadata:
       labels:
@@ -43,3 +43,8 @@ spec:
               value: locust-master
             - name: TARGET_HOST
               value: http://workload-simulation-webapp.appspot.com
+          resources:
+            requests:
+              cpu: "1"
+            limits:
+              cpu: "2"
